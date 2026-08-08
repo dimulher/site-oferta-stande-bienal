@@ -319,6 +319,64 @@ body.anim .fade-up.in{opacity:1;transform:none}
   .combo{padding:26px 22px}
   .form-card{padding:26px 20px}
 }
+
+/* ===== POP-UP DE RESERVA ===== */
+.modal-overlay{
+  position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
+  background:rgba(14,26,50,.72);backdrop-filter:blur(4px);padding:20px;
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  position:relative;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;
+  background:linear-gradient(180deg,#FFFFFF 0%,#FBF5E9 100%);
+  border:1px solid rgba(203,161,53,.5);border-radius:16px;
+  padding:clamp(28px,4vw,40px);box-shadow:0 40px 90px rgba(0,0,0,.4);
+  animation:modal-in .35s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes modal-in{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+.modal-close{
+  position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--border);background:#fff;color:var(--muted);font-size:1.1rem;line-height:1;
+  cursor:pointer;display:grid;place-items:center;transition:.2s;
+}
+.modal-close:hover{background:var(--paper-2);color:var(--ink)}
+.modal-box h3{font-family:'Playfair Display',serif;font-size:clamp(21px,3vw,27px);font-weight:700;color:var(--ink);margin-bottom:6px}
+.modal-box h3::after{content:"";display:block;width:46px;height:2px;background:linear-gradient(90deg,var(--dourado),transparent);margin-top:12px}
+.modal-box .modal-lead{color:var(--muted);font-size:.88rem;margin:14px 0 24px}
+.mfield{margin-bottom:16px}
+.mfield label{display:block;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;font-weight:600}
+.mfield input[type="text"],.mfield input[type="tel"],.mfield input[type="email"]{
+  width:100%;background:#fff;border:1px solid var(--border);border-radius:6px;
+  padding:13px 14px;color:var(--ink);font-family:'Montserrat';font-size:.92rem;transition:.2s;
+}
+.mfield input:focus{outline:none;border-color:var(--dourado);box-shadow:0 0 0 3px rgba(203,161,53,.15)}
+.mfield input::placeholder{color:var(--dim)}
+
+.mfield select{
+  width:100%;appearance:none;-webkit-appearance:none;cursor:pointer;
+  background:#fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="9" viewBox="0 0 14 9"><path d="M1 1l6 6 6-6" fill="none" stroke="%23B44B3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>') no-repeat right 16px center;
+  border:1.5px solid rgba(203,161,53,.5);border-radius:8px;
+  padding:14px 40px 14px 16px;color:var(--ink);font-family:'Montserrat';font-weight:600;font-size:.9rem;
+  transition:.2s;box-shadow:0 4px 14px rgba(27,36,56,.05);
+}
+.mfield select:invalid{color:var(--dim);font-weight:400}
+.mfield select:focus{outline:none;border-color:var(--vermelho);box-shadow:0 0 0 3px rgba(180,75,59,.12)}
+.mfield select option{color:var(--ink);font-weight:500}
+.mradio-row{display:flex;gap:10px}
+.mradio-row label{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  border:1px solid var(--border);border-radius:8px;padding:11px;cursor:pointer;
+  font-size:.86rem;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:500;transition:.2s;
+}
+.mradio-row label:has(input:checked){border-color:var(--vermelho);background:rgba(180,75,59,.06);color:var(--ink);font-weight:600}
+.mradio-row input{accent-color:var(--vermelho)}
+.modal-box .cta-btn{width:100%;margin-top:8px}
+.modal-note{margin-top:14px;text-align:center;font-size:.7rem;color:var(--dim);letter-spacing:.5px}
+.modal-success{display:none;text-align:center;padding:20px 0}
+.modal-success.show{display:block}
+.modal-success .ms-icon{font-family:'Playfair Display',serif;font-size:2.4rem;color:var(--dourado-deep);margin-bottom:10px}
+.modal-success h3{margin-bottom:10px}
+.modal-success p{color:var(--muted);font-size:.92rem}
 </style>
 </head>
 <body>
@@ -327,7 +385,7 @@ body.anim .fade-up.in{opacity:1;transform:none}
   <a href="#" class="brand" aria-label="Novos Autores do Brasil">
     <img src="assets/logo-h-bordo.png" alt="Novos Autores do Brasil" class="logo-img">
   </a>
-  <a href="#planos" class="header-cta">Garantir meu espaço</a>
+  <a href="#" class="header-cta" id="headerCta">Garantir meu espaço</a>
 </header>
 
 <!-- HERO -->
@@ -592,28 +650,117 @@ body.anim .fade-up.in{opacity:1;transform:none}
   </div>
 </footer>
 
+<!-- POP-UP DE RESERVA -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose" aria-label="Fechar">✕</button>
+
+    <form id="reservaForm">
+      <h3>Garanta seu espaço no estande</h3>
+      <p class="modal-lead">Preencha seus dados e nosso time entra em contato pra confirmar data, horário e forma de pagamento.</p>
+
+      <div class="mfield">
+        <label for="mNome">Nome completo</label>
+        <input type="text" id="mNome" name="nome" placeholder="Seu nome completo" required>
+      </div>
+      <div class="mfield">
+        <label for="mWhats">WhatsApp</label>
+        <input type="tel" id="mWhats" name="whatsapp" placeholder="(11) 91234-5678" required>
+      </div>
+      <div class="mfield">
+        <label for="mInsta">Instagram</label>
+        <input type="text" id="mInsta" name="instagram" placeholder="@seuusuario" required>
+      </div>
+      <div class="mfield">
+        <label for="mEmail">E-mail (opcional)</label>
+        <input type="email" id="mEmail" name="email" placeholder="seu@email.com">
+      </div>
+      <div class="mfield">
+        <label for="mCidade">Cidade/Estado (opcional)</label>
+        <input type="text" id="mCidade" name="cidade_estado" placeholder="Ex: São Paulo/SP">
+      </div>
+      <div class="mfield">
+        <label>Já tem seu livro pronto?</label>
+        <div class="mradio-row">
+          <label><input type="radio" name="livro_pronto" value="sim" required> Sim</label>
+          <label><input type="radio" name="livro_pronto" value="nao"> Não</label>
+        </div>
+      </div>
+      <div class="mfield">
+        <label for="mFormato">Qual formato você tem interesse?</label>
+        <select id="mFormato" name="formato" required>
+          <option value="" disabled selected>Selecione uma opção</option>
+          <option value="autografo">Sessão de Autógrafos — 12x R$150</option>
+          <option value="podcast">Espaço para Podcast — 12x R$60</option>
+          <option value="palestra">Palco de Palestra — 12x R$100</option>
+          <option value="combo">Combo Completo — 12x R$270</option>
+        </select>
+      </div>
+
+      <button type="submit" class="cta-btn">GARANTIR MEU ESPAÇO →</button>
+      <p class="modal-note">Seus dados estão garantidos · Retorno em até 2 horas úteis</p>
+    </form>
+
+    <div class="modal-success" id="modalSuccess">
+      <div class="ms-icon">✦</div>
+      <h3>Recebemos seus dados!</h3>
+      <p>Nosso time vai entrar em contato pelo WhatsApp em até 2 horas (dentro do horário comercial) pra confirmar seu horário no estande.</p>
+    </div>
+  </div>
+</div>
+
 <script>
 document.body.classList.add('anim');
 
 /* ===== UTM capture ===== */
 const _utm = Object.fromEntries(['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].map(k => [k, new URLSearchParams(location.search).get(k) || null]));
 
-/* ===== Config: Spotform · TROCAR pelo link do formulário desta oferta ===== */
-const CHECKOUT_URL = 'https://form.spotform.com.br/SEU-FORMULARIO-AQUI';
+/* ===== Config: URL do Web App do Google Apps Script (planilha) ===== */
+/* TROCAR pela URL gerada ao publicar o script (ver instruções enviadas pelo Claude) */
+const SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/SEU-SCRIPT-AQUI/exec';
 
-function preserveUtm(url){
-  try{
-    const u = new URL(url);
-    Object.entries(_utm).forEach(([k,v])=>{ if(v) u.searchParams.set(k,v); });
-    return u.toString();
-  }catch(e){ return url; }
+/* ===== Pop-up de reserva ===== */
+const modalOverlay = document.getElementById('modalOverlay');
+const reservaForm = document.getElementById('reservaForm');
+const modalSuccess = document.getElementById('modalSuccess');
+
+function openModal(){
+  modalOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if(typeof fbq !== 'undefined'){ fbq('track','Lead',{content_name:'Estande Bienal NAB'}); }
 }
-document.getElementById('buyBtn').addEventListener('click', function(e){
+function closeModal(){
+  modalOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('buyBtn').addEventListener('click', function(e){ e.preventDefault(); openModal(); });
+document.getElementById('headerCta').addEventListener('click', function(e){ e.preventDefault(); openModal(); });
+document.getElementById('modalClose').addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', function(e){ if(e.target === modalOverlay) closeModal(); });
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal(); });
+
+reservaForm.addEventListener('submit', function(e){
   e.preventDefault();
-  if(typeof fbq !== 'undefined'){
-    fbq('track','Lead',{content_name:'Estande Bienal NAB'});
-  }
-  window.location.href = preserveUtm(CHECKOUT_URL);
+  const fd = new FormData(reservaForm);
+  const payload = Object.fromEntries(fd.entries());
+  Object.assign(payload, _utm, {pagina: 'Estande Bienal NAB', data_envio: new Date().toISOString()});
+
+  const submitBtn = reservaForm.querySelector('button[type="submit"]');
+  submitBtn.disabled = true; submitBtn.textContent = 'ENVIANDO...';
+
+  fetch(SHEET_WEBHOOK_URL, {
+    method:'POST',
+    mode:'no-cors', /* Apps Script Web App não retorna CORS; enviamos "às cegas" */
+    headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify(payload)
+  }).catch(()=>{ /* segue mesmo se a rede falhar em avisar o resultado */ })
+  .finally(() => {
+    if(typeof fbq !== 'undefined'){
+      fbq('track','SubmitApplication',{content_name:'Estande Bienal NAB', formato: payload.formato});
+    }
+    reservaForm.style.display = 'none';
+    modalSuccess.classList.add('show');
+  });
 });
 
 /* VSL placeholder click (trocar quando o vídeo real entrar) */
