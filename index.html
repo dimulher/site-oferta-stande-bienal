@@ -21,7 +21,7 @@
 <!-- ============ META PIXEL · NAB ID (mesmo pixel da conta) ============ -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','599258489828023');
+fbq('init','1893288164591890');
 fbq('track','PageView');
 </script>
 <!-- ====================================================== -->
@@ -732,7 +732,8 @@ const modalSuccess = document.getElementById('modalSuccess');
 function openModal(){
   modalOverlay.classList.add('open');
   document.body.style.overflow = 'hidden';
-  if(typeof fbq !== 'undefined'){ fbq('track','Lead',{content_name:'Estande Bienal NAB'}); }
+  /* sinal leve de intenção, não conta como Lead (isso só acontece no envio real do form) */
+  if(typeof fbq !== 'undefined'){ fbq('track','InitiateCheckout',{content_name:'Estande Bienal NAB'}); }
 }
 function closeModal(){
   modalOverlay.classList.remove('open');
@@ -744,11 +745,24 @@ document.getElementById('modalClose').addEventListener('click', closeModal);
 modalOverlay.addEventListener('click', function(e){ if(e.target === modalOverlay) closeModal(); });
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal(); });
 
+function pegarCookie(nome){
+  const m = document.cookie.match('(^|;)\\s*' + nome + '\\s*=\\s*([^;]+)');
+  return m ? m.pop() : '';
+}
+
 reservaForm.addEventListener('submit', function(e){
   e.preventDefault();
   const fd = new FormData(reservaForm);
   const payload = Object.fromEntries(fd.entries());
-  Object.assign(payload, _utm, {pagina: 'Estande Bienal NAB', data_envio: new Date().toISOString()});
+  const eventId = 'lead_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
+  Object.assign(payload, _utm, {
+    pagina: 'Estande Bienal NAB',
+    data_envio: new Date().toISOString(),
+    event_id: eventId,
+    event_source_url: window.location.href,
+    fbp: pegarCookie('_fbp'),
+    fbc: pegarCookie('_fbc')
+  });
 
   const submitBtn = reservaForm.querySelector('button[type="submit"]');
   submitBtn.disabled = true; submitBtn.textContent = 'ENVIANDO...';
@@ -761,7 +775,8 @@ reservaForm.addEventListener('submit', function(e){
   }).catch(()=>{ /* segue mesmo se a rede falhar em avisar o resultado */ })
   .finally(() => {
     if(typeof fbq !== 'undefined'){
-      fbq('track','SubmitApplication',{content_name:'Estande Bienal NAB', formato: payload.formato});
+      /* mesmo event_id do servidor (Conversions API) -> Meta deduplica automaticamente */
+      fbq('track','Lead',{content_name:'Estande Bienal NAB', formato: payload.formato}, {eventID: eventId});
     }
     reservaForm.style.display = 'none';
     modalSuccess.classList.add('show');
