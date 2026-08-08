@@ -438,7 +438,10 @@ body.anim .fade-up.in{opacity:1;transform:none}
   </div>
 </section>
 
-<!-- VSL -->
+<!-- VSL: removido temporariamente até o vídeo do expert ficar pronto.
+     Quando chegar, é só descomentar este bloco e trocar o conteúdo do
+     .vsl-frame por <video controls poster="assets/stand-1.jpg"><source src="assets/vsl.mp4"></video>
+     ou embed do YouTube/Vimeo.
 <section class="section">
   <div class="container">
     <div class="sec-title">
@@ -447,14 +450,14 @@ body.anim .fade-up.in{opacity:1;transform:none}
     </div>
     <div class="vsl-wrap fade-up">
       <div class="vsl-frame" id="vslFrame">
-        <!-- TROCAR por <video controls poster="assets/stand-1.jpg"><source src="assets/vsl.mp4"></video>
-             ou embed do YouTube/Vimeo quando o vídeo do expert estiver pronto -->
         <div class="play" id="vslPlay">▶</div>
         <span class="vsl-label">Vídeo explicativo · em produção</span>
       </div>
     </div>
   </div>
 </section>
+-->
+<!-- /VSL -->
 
 <div class="container"><div class="ornament"><span>✦</span></div></div>
 
@@ -785,10 +788,13 @@ reservaForm.addEventListener('submit', function(e){
   });
 });
 
-/* VSL placeholder click (trocar quando o vídeo real entrar) */
-document.getElementById('vslPlay').addEventListener('click', function(){
-  alert('Vídeo em produção. Assim que estiver pronto, substitua o bloco .vsl-frame por um player real (YouTube/Vimeo/HeyGen) ou tag <video>.');
-});
+/* VSL placeholder click (trocar quando o vídeo real entrar) — seção comentada por enquanto */
+const vslPlayBtn = document.getElementById('vslPlay');
+if (vslPlayBtn) {
+  vslPlayBtn.addEventListener('click', function(){
+    alert('Vídeo em produção. Assim que estiver pronto, substitua o bloco .vsl-frame por um player real (YouTube/Vimeo/HeyGen) ou tag <video>.');
+  });
+}
 
 /* ===== Carrossel de fotos dos autores (scroll + setas + autoplay) ===== */
 (function initAuthorsMarquee(){
