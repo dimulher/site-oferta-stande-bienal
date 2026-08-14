@@ -41,7 +41,7 @@
 | Sessão de Autógrafos | Mesa de autógrafos, 1h | 12x R$150 |
 | Espaço para Podcast | Espaço reservado, 30min (obs: sem áudio/vídeo) | 12x R$60 |
 | Palco de Palestra | 20min + microfone + TV 86" + operador (obs: sem foto/vídeo) | 12x R$100 |
-| Combo Completo | Os 3 formatos | 12x R$270 ou R$3.000 à vista |
+| Combo Completo | Os 3 formatos | 12x R$270 ou R$3.240 à vista |
 
 ## 6. Pendências (rastrear aqui)
 - [ ] Definir nome/marca da oferta
